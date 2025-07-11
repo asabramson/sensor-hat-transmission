@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sensor Dashboard</title>
+</head>
+<body>
+  <h1>Live Sensor Readings</h1>
+
+  <table id="sensor-table" border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Device ID</th>
+        <th>Temperature (°C)</th>
+        <th>Humidity (%)</th>
+        <th>Pressure (hPa)</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- "get_stats()" api call queries populate data here -->
+    </tbody>
+  </table>
+
+  <script src="{{ url_for('static', filename='js/sensordata.js') }}"></script>
+</body>
+</html>
