@@ -1,0 +1,3 @@
+[submodule "PiCSQ"]
+	path = PiCSQ
+	url = https://github.com/BT8298/PiCSQ
