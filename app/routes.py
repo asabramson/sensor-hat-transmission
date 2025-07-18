@@ -3,7 +3,7 @@ from app.models import SensorData
 from app import db
 
 from sqlalchemy import func, and_
-from datetime import datetime
+from datetime import datetime, timedelta
 
 main_bp = Blueprint('app', __name__)
 api_bp = Blueprint('api', __name__, url_prefix='/api')
@@ -72,6 +72,40 @@ def get_stats():
     ]
     return jsonify(data)
 
+@api_bp.route('/sensor/graphs')
+def sensor_series():
+    metric = request.args.get('metric')      # temperature, humidity, pressure
+    period = request.args.get('period')      # hour, day, month
+
+    field_map = {
+      'temperature': SensorData.temperature,
+      'humidity':    SensorData.humidity,
+      'pressure':    SensorData.pressure
+    }
+    # ensure recieved request contains data in valid format
+    if metric not in field_map or period not in ('hour','day','month'):
+        return ("Bad request", 400)
+
+    now = datetime.now()
+    if period == 'hour':   delta = timedelta(hours=1)
+    if period == 'day':    delta = timedelta(days=1)
+    if period == 'month':  delta = timedelta(days=30)
+
+    rows = (
+      SensorData.query
+        .filter(SensorData.timestamp >= now - delta)
+        .order_by(SensorData.timestamp)
+        .all()
+    )
+
+    data = [
+      {
+        "t": r.timestamp.isoformat(),
+        "v": getattr(r, metric)
+      }
+      for r in rows
+    ]
+    return jsonify(data)
 
 # NON-API ROUTES
 

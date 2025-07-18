@@ -1,3 +1,6 @@
 venv/
 migrations/
+hidden_traffic_data/
 *.db
+
+.DS_Store

@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Sensor Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <body>
   <h1>Live Sensor Readings</h1>
@@ -21,6 +24,31 @@
       <!-- "get_stats()" api call queries populate data here -->
     </tbody>
   </table>
+
+  <hr>
+
+  <!-- Graphs are rendered 3x3, each row being either temp, humidity, or pressure and columns being time interval of hour, day, or month-->
+  <h2>Temperature</h2>
+  <div class="charts-grid">
+    <canvas id="temp-hour"></canvas>
+    <canvas id="temp-day"></canvas>
+    <canvas id="temp-month"></canvas>
+  </div>
+
+  <h2>Humidity</h2>
+  <div class="charts-grid">
+    <canvas id="hum-hour"></canvas>
+    <canvas id="hum-day"></canvas>
+    <canvas id="hum-month"></canvas>
+  </div>
+
+  <h2>Pressure</h2>
+  <div class="charts-grid">
+    <canvas id="pre-hour"></canvas>
+    <canvas id="pre-day"></canvas>
+    <canvas id="pre-month"></canvas>
+  </div>
+
 
   <script src="{{ url_for('static', filename='js/sensordata.js') }}"></script>
 </body>
