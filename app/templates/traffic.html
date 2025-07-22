@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Traffic Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Live Traffic Simulation</h1>
+    <table id="traffic-table" border="1" cellpadding="6" cellspacing="0">
+    <thead>
+        <tr>
+        <th>Location</th>
+        <th>In (30s)</th>
+        <th>Out (30s)</th>
+        <th>Total In</th>
+        <th>Total Out</th>
+        <th>Count</th>
+        <th>Congestion</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- JS will inject rows here -->
+    </tbody>
+    </table>
+
+    <script src="{{ url_for('static', filename='js/traffic.js') }}"></script>
+</body>

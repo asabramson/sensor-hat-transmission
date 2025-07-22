@@ -9,9 +9,11 @@ class TrafficData(db.Model):
     __tablename__ = 'traffic_data'
     id : sqlo.Mapped[int] = sqlo.mapped_column(primary_key=True)
     device_id : sqlo.Mapped[int] = sqlo.mapped_column(sqla.Integer)   
-    count : sqlo.Mapped[int] = sqlo.mapped_column(sqla.Integer)
-    timestamp : sqlo.Mapped[Optional[datetime]] = sqlo.mapped_column(default = lambda : datetime.now())
-    #timestamp  = db.Column(db.DateTime, default=datetime.now) TRADITIONAL IMPLEMENTATION
+    in_count : sqlo.Mapped[int] = sqlo.mapped_column(sqla.Integer)
+    out_count : sqlo.Mapped[int] = sqlo.mapped_column(sqla.Integer)
+    timestamp : sqlo.Mapped[float] = sqlo.mapped_column(sqla.Float)
+    # Real world implementation would likely use exact timestamps, for the simulation, we will use a counter to increment in 15 second intervals
+    # timestamp : sqlo.Mapped[Optional[datetime]] = sqlo.mapped_column(default = lambda : datetime.now())
 
 
 class SensorData(db.Model):
