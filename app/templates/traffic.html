@@ -8,6 +8,7 @@
 </head>
 <body>
     <h1>Live Traffic Simulation</h1>
+    <h3>Click <a href="{{ url_for('app.sensor_route') }}">here</a> to view live sensor data</h3>
     <table id="traffic-table" border="1" cellpadding="6" cellspacing="0">
     <thead>
         <tr>
@@ -16,7 +17,7 @@
         <th>Out (30s)</th>
         <th>Total In</th>
         <th>Total Out</th>
-        <th>Count</th>
+        <th>Count (in vs out)</th>
         <th>Congestion</th>
         </tr>
     </thead>
@@ -24,6 +25,18 @@
         <!-- JS will inject rows here -->
     </tbody>
     </table>
+
+    <h2>Predicted Traffic (Day vs Month)</h2>
+
+    {% set locations = ["Bar Harbor Head Lighthouse","Jordan Pond","Otter Cliff Rd","Moore Rd (Schoodic)","Sieur de Monts","Seawall"] %}
+
+    {% for i in range(6) %}
+    <h3>{{ locations[i] }}</h3>
+    <div class="charts-grid">
+        <canvas id="traffic-day-{{i+1}}"></canvas>
+        <canvas id="traffic-month-{{i+1}}"></canvas>
+    </div>
+    {% endfor %}
 
     <script src="{{ url_for('static', filename='js/traffic.js') }}"></script>
 </body>

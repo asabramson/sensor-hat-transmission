@@ -1,6 +1,7 @@
-from flask import Blueprint, request, jsonify, render_template
-from app.models import SensorData
+from flask import Blueprint, request, jsonify, render_template, url_for
+from app.models import SensorData, TrafficData
 from app import db
+from app.traffic_csv_parser import get_day_hours, get_month_totals
 
 from sqlalchemy import func, and_
 from datetime import datetime, timedelta
@@ -108,7 +109,9 @@ def sensor_series():
     ]
     return jsonify(data)
 
+
 # ------------------------------ TRAFFIC SECTION ------------------------------
+
 
 NUM_LOCATIONS = 6
 SIM_DURATION   = 90 * 60   # program will run for 90 minutes (converted into seconds)
@@ -116,14 +119,15 @@ INTERVAL       = 30
 SIM_STEPS      = 180       # 90 * 2 ticks per minute
 
 # average visitors per 30 seconds for each location (ESTIMATES!)
-AVG_VISITS = [0.60, 0.50, 0.40, 0.30, 0.20, 0.15]
+# ordered by: BBHL, Jordan, Otter, Schoodic, SDM, Seawall
+AVG_VISITS = [0.30, 0.70, 0.55, 0.30, 0.25, 0.15]
 
 _start_time = datetime.now()
 # each will be populated with 180 values representing the number of visitors counted in the past 30 seconds
 _in_series  = []
 _out_series = []
 
-# AI GENERATED AND RECOMMENDED USING POISSON SAMPLING
+# AI RECOMMENDED USING POISSON SAMPLING AND GENERATED THE FOLLOWING SNIPPET
 def _sample_poisson(lam: float) -> int:
     L = math.exp(-lam)
     k = 0
@@ -133,7 +137,7 @@ def _sample_poisson(lam: float) -> int:
         p *= random.random()
     return k - 1
 
-# populate lists once at runtime
+# populate lists once at runtime independently of API/route calls
 for lam in AVG_VISITS:
     _in_series.append([_sample_poisson(lam) for _ in range(SIM_STEPS)])
     _out_series.append([_sample_poisson(lam) for _ in range(SIM_STEPS)])
@@ -155,13 +159,41 @@ def live_traffic():
         tot_out = sum(_out_series[loc][: idx + 1])
         cnt = tot_in - tot_out
 
-        if   cnt < 1:          cong = "No Crowding"
-        elif cnt < 3:          cong = "Minimal Crowding"
-        elif cnt < 6:          cong = "Moderate Crowding"
+        if   cnt < 2:          cong = "No Crowding"
+        elif cnt < 5:          cong = "Minimal Crowding"
+        elif cnt < 7:          cong = "Moderate Crowding"
         else:                  cong = "Heavy Crowding"
 
+        # Real world implementation would populate and query database instead of global variables
+        # Global variables were used here for simplicity and for easier testing
+        #
+        # sample = TrafficData(
+        #     location_id = loc + 1,
+        #     in_count = inc,
+        #     out_count = outc,
+        #     timestamp = datetime.now()
+        # )
+        #
+        # db.session.add(sample)
+        # db.session.commit()
+
+        loc+=1
+        # Virtual environment used for testing used Python 3.9, match statements are only in 3.10 and later
+        if loc == 1:
+            loc_str = "BHHL"
+        elif loc == 2:
+            loc_str = "Jordan Pond"
+        elif loc == 3:
+            loc_str = "Otter Cliff"
+        elif loc == 4:
+            loc_str = "Schoodic"
+        elif loc == 5:
+            loc_str = "Sieur de Monts"
+        else:
+            loc_str = "Seawall"
+
         result.append({
-            "location_id": loc + 1,
+            "location_id": loc_str,
             "in_count":    inc,
             "out_count":   outc,
             "total_in":    tot_in,
@@ -172,9 +204,67 @@ def live_traffic():
 
     return jsonify(result)
 
+
+
+@api_bp.route('/traffic/day_series')
+def traffic_day_series():
+    loc = int(request.args.get('loc', 1))
+    day = int(request.args.get('day', 26))
+
+    # Virtual environment used for testing used Python 3.9, match statements are only in 3.10 and later
+    if loc == 1:
+        loc_str = "bhhl"
+    elif loc == 2:
+        loc_str = "jordan"
+    elif loc == 3:
+        loc_str = "otter"
+    elif loc == 4:
+        loc_str = "schoodic"
+    elif loc == 5:
+        loc_str = "sdm"
+    else:
+        loc_str = "seawall"
+
+    in_hours, out_hours = get_day_hours(loc_str, day)
+    return jsonify({
+        "hours": list(range(1,25)),
+        "inbound": in_hours,
+        "outbound": out_hours
+    })
+
+@api_bp.route('/traffic/month_series')
+def traffic_month_series():
+    loc = int(request.args.get('loc', 1))
+
+    # Virtual environment used for testing used Python 3.9, match statements are only in 3.10 and later
+    if loc == 1:
+        loc_str = "bhhl"
+    elif loc == 2:
+        loc_str = "jordan"
+    elif loc == 3:
+        loc_str = "otter"
+    elif loc == 4:
+        loc_str = "schoodic"
+    elif loc == 5:
+        loc_str = "sdm"
+    else:
+        loc_str = "seawall"
+
+    days, in_tot, out_tot = get_month_totals(loc_str)
+    return jsonify({
+        "days": days,
+        "inbound": in_tot,
+        "outbound": out_tot
+    })
+
+
 # NON-API ROUTES
 
 @main_bp.route('/', methods=['GET'])
 @main_bp.route('/index', methods=['GET'])
 def index():  
-    return render_template('traffic.html') # using Jinja template loader to future-proof EDIT BACK LATER
+    return render_template('traffic.html') # using Jinja template loader instead of load_static to future-proof
+
+@main_bp.route('/sensordata', methods=['GET'])
+def sensor_route():  
+    return render_template('sensor.html') # using Jinja template loader instead of load_static to future-proof

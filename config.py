@@ -9,4 +9,5 @@ class Config(object):
     ROOT_PATH = basedir
     STATIC_FOLDER = os.path.join(basedir, 'app//static')
     TEMPLATE_FOLDER = os.path.join(basedir, 'app//templates')
+    TRAFFIC_DATA_DIR = os.path.join(basedir, 'hidden_traffic_data')
 

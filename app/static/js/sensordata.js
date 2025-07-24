@@ -9,12 +9,13 @@ async function fetchSensorData() {
 
     data.forEach(item => {
       const tr = document.createElement('tr');
+      // const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       tr.innerHTML = `
         <td>${item.device_id}</td>
         <td>${item.temperature.toFixed(2)}</td>
         <td>${item.humidity.toFixed(2)}</td>
         <td>${item.pressure.toFixed(2)}</td>
-        <td>${new Date(item.timestamp).toLocaleString()}</td>
+        <td>${new Date(item.timestamp).toLocaleString('en-US')}</td>
       `;
       tbody.appendChild(tr);
     });
@@ -70,4 +71,4 @@ async function loadSeries(metric, period, canvasId, label) {
 });
 
 fetchSensorData(); // initial fetch
-setInterval(fetchSensorData, 15_000); // fetch every 5 seconds
+setInterval(fetchSensorData, 15_000); // fetch every 15 seconds
