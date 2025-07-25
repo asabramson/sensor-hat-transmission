@@ -25,7 +25,7 @@ async function fetchTrafficLive() {
   }
 }
 
-const LOCATIONS = [1,2,3,4,5,6];
+const LOCATIONS = [1,2,3,4,5,6]; // IF TESTING WITH `exampledata.csv` CHANGE THIS LIST TO ONLY [7]
 const TRAFFIC_DAY = 26; // date of presentation session
 
 async function loadTrafficDay(loc, day) {

@@ -189,8 +189,10 @@ def live_traffic():
             loc_str = "Schoodic"
         elif loc == 5:
             loc_str = "Sieur de Monts"
-        else:
+        elif loc == 6:
             loc_str = "Seawall"
+        else:
+            loc_str = "Example Data (you can change this!)" # Edit this graph header to whatever you want!
 
         result.append({
             "location_id": loc_str,
@@ -211,7 +213,6 @@ def traffic_day_series():
     loc = int(request.args.get('loc', 1))
     day = int(request.args.get('day', 26))
 
-    # Virtual environment used for testing used Python 3.9, match statements are only in 3.10 and later
     if loc == 1:
         loc_str = "bhhl"
     elif loc == 2:
@@ -222,8 +223,10 @@ def traffic_day_series():
         loc_str = "schoodic"
     elif loc == 5:
         loc_str = "sdm"
-    else:
+    elif loc == 6:
         loc_str = "seawall"
+    else:
+        loc_str = "exampledata"
 
     in_hours, out_hours = get_day_hours(loc_str, day)
     return jsonify({
@@ -236,7 +239,6 @@ def traffic_day_series():
 def traffic_month_series():
     loc = int(request.args.get('loc', 1))
 
-    # Virtual environment used for testing used Python 3.9, match statements are only in 3.10 and later
     if loc == 1:
         loc_str = "bhhl"
     elif loc == 2:
@@ -247,8 +249,10 @@ def traffic_month_series():
         loc_str = "schoodic"
     elif loc == 5:
         loc_str = "sdm"
-    else:
+    elif loc == 6:
         loc_str = "seawall"
+    else:
+        loc_str = "exampledata"
 
     days, in_tot, out_tot = get_month_totals(loc_str)
     return jsonify({
